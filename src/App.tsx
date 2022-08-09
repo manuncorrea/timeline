@@ -1,9 +1,9 @@
-import { Header } from "./components/Header"
-import { Post } from "./components/Post"
-
-import './styles/global.css';
-import styles from './styles/App.module.css'
+import { Header } from "./components/Header";
+import { Post } from "./components/Post";
 import { Sidebar } from "./components/Sidebar";
+
+import styles from './styles/App.module.css';
+import './styles/global.css';
 
 const posts = [
   {
@@ -55,7 +55,6 @@ function App() {
         <Sidebar />
         <main>
           {posts.map((post) => {
-            console.log(post)
             return <Post 
               key={post.id}
               author={post.author}

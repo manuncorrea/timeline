@@ -1,21 +1,37 @@
 import { format, formatDistanceToNow } from 'date-fns';
 import ptBR from 'date-fns/locale/pt-BR';
-import { useState } from 'react';
+import { ChangeEvent, FormEvent, InvalidEvent, useState } from 'react';
 
 import { Avatar } from '../Avatar';
 import { Comment } from '../Comment';
 import styles from './Post.module.css';
 
+interface Author {
+  name: string;
+  role: string;
+  avatarUrl: string;
+}
 
-export function Post({ author, publishedAt, content }) {
-  const [comments, setComments] = useState ([
+interface Content {
+  type: 'paragraph' | 'link';
+  content: string;
+}
+
+interface PostProps {
+  author: Author;
+  publishedAt: Date;
+  content: Content[];
+}
+
+export function Post({ author, publishedAt, content }: PostProps) {
+  const [comments, setComments] = useState([
     'Post muito bacana!'
   ]);
 
   const [newCommentText, setNewCommentText] = useState('');
 
-  const publushedDateFormatted = format(publishedAt, "d 'de' LLLL, 'ás' HH:mm'h'", {
-    locale: ptBR
+  const publishedDateFormatted = format(publishedAt, "d 'de' LLLL 'às' HH:mm'h'", {
+    locale: ptBR,
   });
 
   const publishedDateRelativeToNow = formatDistanceToNow(publishedAt, {
@@ -23,12 +39,8 @@ export function Post({ author, publishedAt, content }) {
     addSuffix: true
   });
 
-  const isNewCommentEmpty = newCommentText.length === 0;
-
-  function handleCreateNewComment() {
+  function handleCreateNewComment(event: FormEvent) {
     event.preventDefault();
-
-    const newCommentText = event.target.comment.value
 
     setComments([...comments, newCommentText]);
 
@@ -36,21 +48,23 @@ export function Post({ author, publishedAt, content }) {
 
   };
 
-  function handleNewCommentChange(){
+  function handleNewCommentChange(event: ChangeEvent<HTMLTextAreaElement>){
     event.target.setCustomValidity('');
    setNewCommentText(event.target.value);
   };
 
-  function handleNewCommentInvalid(){
+  function handleNewCommentInvalid(event: InvalidEvent<HTMLTextAreaElement>){
     event.target.setCustomValidity('Esse campo é obrigatório!');
   };
   
-  function deleteComment(commentToDelete){
+  function deleteComment(commentToDelete: string){
     const commentsWithoutDeleteOnde = comments.filter(comment => {
       return comment !== commentToDelete
     });
     setComments(commentsWithoutDeleteOnde);
   };
+
+  const isNewCommentEmpty = newCommentText.length === 0;
 
   return (
     <article className={styles.post}>
@@ -63,7 +77,7 @@ export function Post({ author, publishedAt, content }) {
           </div>
         </div>
 
-        <time title={publushedDateFormatted} dataTime={publishedAt.toISOString()}>{publishedDateRelativeToNow}</time>
+        <time title={publishedDateFormatted} dateTime={publishedAt.toISOString()}>{publishedDateRelativeToNow}</time>
       </header>
       <div className={styles.content}>
        {content.map(line => {
